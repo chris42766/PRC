@@ -4,18 +4,38 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "HealthComponent.h"
+#include "UStatComponent.h"
+#include "PlayerHUD.h"
+#include "InputAction.h" 
 #include "HeroCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCollectibleCountChanged, int32, NewCount);
+
 
 UCLASS()
 class PRC_API AHeroCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	
 
 public:
 	// Sets default values for this character's properties
 	AHeroCharacter();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UHealthComponent> HealthComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UUStatComponent> StatComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "HUD")
+	TSubclassOf<UPlayerHUD> HUDWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UPlayerHUD> HUDInstance;
+
+
+
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +58,8 @@ public:
 	TObjectPtr<class UInputAction> JumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> DodgeAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Attack;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> CameraBoom;
@@ -75,7 +97,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Collectibles")
 	void AddCollectible();
-
+	
 private:
 	int32 CollectibleCount = 0;
 	bool bIsDodging = false;

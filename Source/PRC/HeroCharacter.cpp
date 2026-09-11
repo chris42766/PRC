@@ -27,6 +27,8 @@ AHeroCharacter::AHeroCharacter()
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
+    HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+    StatComp = CreateDefaultSubobject<UUStatComponent>(TEXT("StatComp"));
 
 }
 
@@ -42,7 +44,14 @@ void AHeroCharacter::BeginPlay()
             Subsystem->AddMappingContext(DefaultMappingContext, 0);
         }
     }
-
+    if (StatComp && GetCharacterMovement())
+        GetCharacterMovement()->MaxWalkSpeed *= StatComp->MoveSpeedMultiplier;
+    if (IsLocallyControlled() && HUDWidgetClass)
+    {
+        APlayerController* PC = Cast<APlayerController>(GetController());
+        HUDInstance = CreateWidget<UPlayerHUD>(PC, HUDWidgetClass);
+        if (HUDInstance) HUDInstance->AddToViewport();
+    }
 }
 
 // Called every frame
